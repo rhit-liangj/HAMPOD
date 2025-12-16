@@ -1,42 +1,138 @@
-# HAMPOD2026
+# HAMPOD: Modern Assistive Controller for Amateur Radio
 
-**HAMPOD** is an accessibility interface designed to make amateur radios (like the Icom IC-7300) accessible to visually impaired operators. It uses a Raspberry Pi-based controller with a tactile keypad and text-to-speech (TTS) feedback to provide audio menus, frequency readouts, and full radio control via Hamlib.
+## Overview
 
-## 🚧 Status: Active Reconstruction (Fresh Start)
+HAMPOD is an assistive technology project designed to enable blind and visually impaired amateur radio operators to independently configure and operate modern transceivers. This repository contains a **work‑in‑progress C‑based software and firmware stack** intended to run on commodity Linux hardware (e.g., Raspberry Pi–class systems) and interface with supported radios via standard control libraries.
 
-This project is currently undergoing a major software rewrite ("Fresh Start"). The goal is to replace the original monolithic software layer with a modular, testable, and responsive architecture.
+This codebase represents an **active development and research platform**, not a finished or production‑ready system.
 
-- **Firmware Layer:** Stable. Handles raw hardware I/O (Keypad, Audio extraction) and communicates via Named Pipes.
-- **Software Layer:** Being rewritten from scratch to support robust polling, zero-latency feedback, and reliable Hamlib control.
+---
 
-## 📂 Repository Structure
+## Project Status
 
-*   **`Documentation/`** - **Start Here.** Contains build guides, architectural plans, and developer onboarding.
-    *   `Project_Overview_and_Onboarding/` - Critical reading for developers.
-        *   [`fresh-start-big-plan.md`](Documentation/Project_Overview_and_Onboarding/fresh-start-big-plan.md) - The master plan for the rewrite.
-        *   [`fresh-start-phase-zero-plan.md`](Documentation/Project_Overview_and_Onboarding/fresh-start-phase-zero-plan.md) - Immediate steps for core infrastructure.
-*   **`Firmware/`** - The low-level C code that runs on the Pi. It manages the keypad hardware and separates audio output.
-*   **`Software/`** - The legacy (2025 team) software implementation. It is currently serving as a reference but is slated for replacement.
-*   **`Hardware_Files/`** - Schematics and PCB design files for the custom keypad/hat.
+**Current state:**
 
-## 🚀 Getting Started (Developers)
+* Functional build environment on Linux / Raspberry Pi
+* Executable firmware components
 
-1.  **Review the Plans:** Read `Documentation/Project_Overview_and_Onboarding/fresh-start-big-plan.md` to understand the architecture.
-2.  **Setup Environment:**
-    *   Target hardware: Raspberry Pi 5 (Debian Trixie).
-    *   Dependencies: `libhamlib-dev`, `festival`, `alsa-utils`, `libasound2-dev`.
-3.  **Deployment:** use the scripts in `Documentation/scripts/` to deploy code to the Pi.
+---
 
-## Architecture Overview
+## Repository Structure
 
-The system runs as two main processes communicating via **Named Pipes**:
+```
+HAMPOD/
+├── Firmware/            # Low‑level firmware and hardware‑facing logic
+├── Software/            # Core application logic (state machine, control flow)
+├── Software2/           # Experimental or extended software components
+├── Documentation/       # Technical notes and design references
+├── *.c                  # Standalone or test C source files
+├── *.h                  # Header files
+├── *.sh                 # Setup and startup scripts
+```
 
-1.  **Firmware Process:**
-    *   Reads GPIO pins for the Keypad.
-    *   Manages direct ALSA audio (or Festival TTS).
-    *   Sends raw key events to the Software.
-2.  **Software Process (New):**
-    *   Receives key events.
-    *   Manages application state (Menu, Frequency, Settings).
-    *   Controls the physical radio via `hamlib`.
-    *   Sends text strings back to Firmware for speech output.
+### Firmware
+
+The `Firmware/` directory contains C code intended to interface with hardware‑level components and provide low‑level services to the higher‑level software layer. At present, this includes baseline initialization and test functionality.
+
+### Software
+
+The `Software/` and `Software2/` directories contain the main application logic, including state handling, radio command abstraction, and user interaction logic. These components are under active revision and are not yet fully integrated.
+
+### Scripts
+
+Shell scripts included in the repository assist with installation, setup, or startup on supported Linux platforms. These scripts may require modification depending on the target hardware and operating system.
+
+---
+
+## Build Requirements
+
+### Operating System
+
+* Linux (tested on Raspberry Pi OS)
+
+### Required Tools
+
+```bash
+sudo apt update
+sudo apt install build-essential git
+```
+
+### Optional / Project‑Specific Dependencies
+
+Depending on which components are being built or tested, additional libraries may be required, such as:
+
+* Hamlib (radio control)
+* ALSA (audio output)
+* Text‑to‑speech engines
+
+Exact dependencies may evolve as the project matures.
+
+---
+
+## Building the Code
+
+### Firmware
+
+```bash
+cd Firmware
+make
+# or, if no Makefile is present:
+gcc *.c -o firmware
+```
+
+### Software
+
+```bash
+cd Software
+make
+# or:
+gcc *.c -o hampod_app
+```
+
+The resulting executables are intended to be run from the command line during development and testing.
+
+---
+
+## Running
+
+After building:
+
+```bash
+./firmware
+./hampod_app
+```
+
+At this stage, output is primarily diagnostic and intended to verify correct execution rather than provide a complete user experience.
+
+---
+
+## Development Philosophy
+
+This codebase prioritizes:
+
+* **Incremental validation** (small, testable components)
+* **Hardware independence where possible**
+* **Accessibility‑driven design decisions**
+* **Maintainability for future contributors**
+
+Refactoring, modularization, and subsystem isolation are expected parts of ongoing work.
+
+---
+
+## Intended Future Work
+
+Planned areas of development include:
+
+* Modular radio support
+* Improved audio latency and customization
+* Robust error handling and diagnostics
+* Clear configuration and installation workflows
+* Expanded user testing with visually impaired operators
+
+---
+
+## Disclaimer
+
+This repository is **not a finished assistive device** and should not be deployed for real‑world use without further development, testing, and validation.
+
+---
